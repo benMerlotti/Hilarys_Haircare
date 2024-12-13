@@ -8,7 +8,6 @@ public class HilaryHaircareDbContext : DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Service> Services { get; set; }
-    public DbSet<AppointmentService> AppointmentServices { get; set; }
 
 
     public HilaryHaircareDbContext(DbContextOptions<HilaryHaircareDbContext> context) : base(context)
@@ -59,11 +58,17 @@ public class HilaryHaircareDbContext : DbContext
             }
         );
 
-        // Seed AppointmentServices
-        modelBuilder.Entity<AppointmentService>().HasData(
-            new AppointmentService { Id = 1, AppointmentId = 1, ServiceId = 1 },
-            new AppointmentService { Id = 2, AppointmentId = 1, ServiceId = 3 },
-            new AppointmentService { Id = 3, AppointmentId = 2, ServiceId = 2 }
-        );
+
+        // Configure Many-to-Many relationship for Appointment and Service
+        modelBuilder.Entity<Appointment>()
+            .HasMany(a => a.Services)
+            .WithMany(s => s.Appointments)
+            .UsingEntity(j => j.HasData(
+            new { AppointmentsId = 1, ServicesId = 1 },
+            new { AppointmentsId = 1, ServicesId = 3 },
+            new { AppointmentsId = 2, ServicesId = 2 }
+            ));
+
     }
+
 }

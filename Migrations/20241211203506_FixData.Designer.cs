@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HilaryHairCareAPI.Migrations
 {
     [DbContext(typeof(HilaryHaircareDbContext))]
-    partial class HilaryHaircareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241211203506_FixData")]
+    partial class FixData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,38 +23,6 @@ namespace HilaryHairCareAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("AppointmentService", b =>
-                {
-                    b.Property<int>("AppointmentsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServicesId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("AppointmentsId", "ServicesId");
-
-                    b.HasIndex("ServicesId");
-
-                    b.ToTable("AppointmentService");
-
-                    b.HasData(
-                        new
-                        {
-                            AppointmentsId = 1,
-                            ServicesId = 1
-                        },
-                        new
-                        {
-                            AppointmentsId = 1,
-                            ServicesId = 3
-                        },
-                        new
-                        {
-                            AppointmentsId = 2,
-                            ServicesId = 2
-                        });
-                });
 
             modelBuilder.Entity("HilaryHaircareAPI.Models.Appointment", b =>
                 {
@@ -64,14 +35,17 @@ namespace HilaryHairCareAPI.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<bool>("IsCancelled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ScheduledTime")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<int>("StylistId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("numeric");
@@ -89,19 +63,60 @@ namespace HilaryHairCareAPI.Migrations
                         {
                             Id = 1,
                             CustomerId = 1,
+                            Date = new DateTime(2024, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsCancelled = false,
-                            ScheduledTime = new DateTime(2024, 12, 12, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             StylistId = 1,
+                            Time = new DateTime(2024, 12, 12, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             TotalCost = 40.00m
                         },
                         new
                         {
                             Id = 2,
                             CustomerId = 2,
+                            Date = new DateTime(2024, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsCancelled = true,
-                            ScheduledTime = new DateTime(2024, 12, 13, 11, 0, 0, 0, DateTimeKind.Unspecified),
                             StylistId = 2,
+                            Time = new DateTime(2024, 12, 13, 11, 0, 0, 0, DateTimeKind.Unspecified),
                             TotalCost = 75.00m
+                        });
+                });
+
+            modelBuilder.Entity("HilaryHaircareAPI.Models.AppointmentService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppointmentServices");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AppointmentId = 1,
+                            ServiceId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AppointmentId = 1,
+                            ServiceId = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AppointmentId = 2,
+                            ServiceId = 2
                         });
                 });
 
@@ -245,21 +260,6 @@ namespace HilaryHairCareAPI.Migrations
                             IsActive = false,
                             LastName = "Brown"
                         });
-                });
-
-            modelBuilder.Entity("AppointmentService", b =>
-                {
-                    b.HasOne("HilaryHaircareAPI.Models.Appointment", null)
-                        .WithMany()
-                        .HasForeignKey("AppointmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HilaryHaircareAPI.Models.Service", null)
-                        .WithMany()
-                        .HasForeignKey("ServicesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HilaryHaircareAPI.Models.Appointment", b =>
